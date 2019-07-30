@@ -40,7 +40,7 @@ class NetworkCrudController extends CrudController
             [
                 'name' => 'name',
                 'label' => 'Tên'
-            ]
+            ],
         ]);
 
         $this->crud->addFields([

@@ -16,4 +16,6 @@ Route::group([
     CRUD::resource('offer', 'OfferCrudController');
     CRUD::resource('click', 'ClickCrudController');
     CRUD::resource('lead', 'LeadCrudController');
+    CRUD::resource('device', 'DeviceCrudController');
+    CRUD::resource('location', 'LocationController');
 }); // this should be the absolute last line of this file

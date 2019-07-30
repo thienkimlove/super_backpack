@@ -23,8 +23,17 @@ class Location extends Model
         'name',
         'code'
     ];
+
+    public $appends = [
+        'combine'
+    ];
     // protected $hidden = [];
     // protected $dates = [];
+
+    public function getCombineAttribute()
+    {
+        return $this->name.' - '.$this->code;
+    }
 
     /*
     |--------------------------------------------------------------------------

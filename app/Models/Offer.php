@@ -30,9 +30,24 @@ class Offer extends Model
     // protected $hidden = [];
     // protected $dates = [];
 
+    public $appends = [
+        'link_to_click',
+        'link_to_lead',
+    ];
+
+    public function getLinkToClickAttribute()
+    {
+        return route('frontend.offer_camp').'?offer_id='.$this->id;
+    }
+
+    public function getLinkToLeadAttribute()
+    {
+        return route('frontend.offer_lead').'?offer_id='.$this->id.'&amount=&status=';
+    }
+
     public function network()
     {
-        return $this->hasMany(Network::class);
+        return $this->belongsTo(Network::class);
     }
 
     public function devices()

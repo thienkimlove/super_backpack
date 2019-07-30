@@ -11,6 +11,8 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'FrontendController@index')->name('frontend.index');
+
+
+Route::get('/camp', 'FrontendController@camp')->name('frontend.offer_camp');
+Route::get('/lead', 'FrontendController@lead')->name('frontend.offer_lead');

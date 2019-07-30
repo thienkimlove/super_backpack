@@ -23,6 +23,7 @@ class Network extends Model
         'name'
     ];
 
+
     public function offers()
     {
         return $this->hasMany(Offer::class);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Network;
+use App\Models\Offer;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 
 // VALIDATION: change the requests to match your own file names if you need form validation
@@ -41,6 +43,16 @@ class OfferCrudController extends CrudController
                 'label' => 'Tên'
             ],
             [
+                // n-n relationship (with pivot table)
+                'label' => "Network", // Table column heading
+                'type' => "select",
+                'name' => 'network_id', // the method that defines the relationship in your Model
+                'entity' => 'network', // the method that defines the relationship in your Model
+                'attribute' => "name", // foreign key attribute that is shown to user
+                'model' => "App\Models\Network", // foreign key model
+
+            ],
+            [
                 'name' => 'redirect_link',
                 'label' => 'Link Click'
             ],
@@ -75,9 +87,19 @@ class OfferCrudController extends CrudController
                 'type' => "select_multiple",
                 'name' => 'locations', // the method that defines the relationship in your Model
                 'entity' => 'locations', // the method that defines the relationship in your Model
-                'attribute' => "name", // foreign key attribute that is shown to user
+                'attribute' => "combine", // foreign key attribute that is shown to user
                 'model' => "App\Models\Location", // foreign key model
 
+            ],
+
+            [
+                'name' => 'link_to_click',
+                'label' => 'Link to Click'
+            ],
+
+            [
+                'name' => 'link_to_lead',
+                'label' => 'Link to Lead'
             ],
 
         ]);
@@ -86,6 +108,16 @@ class OfferCrudController extends CrudController
             [
                 'name' => 'name',
                 'label' => 'Tên'
+            ],
+            [
+                // n-n relationship (with pivot table)
+                'label' => "Network", // Table column heading
+                'type' => "select2",
+                'name' => 'network_id', // the method that defines the relationship in your Model
+                'entity' => 'network', // the method that defines the relationship in your Model
+                'attribute' => "name", // foreign key attribute that is shown to user
+                'model' => "App\Models\Network", // foreign key model
+
             ],
             [
                 'name' => 'redirect_link',
@@ -123,13 +155,52 @@ class OfferCrudController extends CrudController
                 'type' => "select2_multiple",
                 'name' => 'locations', // the method that defines the relationship in your Model
                 'entity' => 'locations', // the method that defines the relationship in your Model
-                'attribute' => "name", // foreign key attribute that is shown to user
+                'attribute' => "combine", // foreign key attribute that is shown to user
                 'model' => "App\Models\Location", // foreign key model
                 'pivot' => true,
             ],
         ]);
 
-        $this->crud->addClause('orderBy', 'created_at', 'desc');
+        $this->crud->orderBy('created_at', 'desc');
+        $this->crud->allowAccess('show');
+        $this->crud->enableExportButtons();
+
+        $this->crud->addFilter([ // daterange filter
+            'type' => 'date_range',
+            'name' => 'from_to',
+            'label'=> 'CHỌN THỜI GIAN'
+        ],
+            false,
+            function($value) { // if the filter is active, apply these constraints
+                $dates = json_decode($value);
+                $this->crud->addClause('where', 'created_at', '>=', $dates->from.' 00:00:00');
+                $this->crud->addClause('where', 'created_at', '<=', $dates->to . ' 23:59:59');
+            });
+
+        $this->crud->addFilter([ // select2 filter
+            'name' => 'status',
+            'type' => 'select2',
+            'label'=> 'Trạng thái'
+        ], function() {
+            return [1 => 'Active', 0 => 'Inactive'];
+        }, function($value) { // if the filter is active
+            $this->crud->addClause('where', 'status', $value);
+        });
+
+
+        $this->crud->addFilter([ // select2 filter
+            'name' => 'network_id',
+            'type' => 'select2',
+            'label'=> 'Network'
+        ], function() {
+            $networkIds = Offer::groupBy('network_id')->pluck('network_id')->all();
+            return Network::whereIn('id', $networkIds)->pluck('name', 'id')->all();
+        }, function($value) { // if the filter is active
+            $this->crud->addClause('where', 'network_id', $value);
+        });
+
+
+
 
         // add asterisk for fields that are required in OfferRequest
         $this->crud->setRequiredFields(StoreRequest::class, 'create');

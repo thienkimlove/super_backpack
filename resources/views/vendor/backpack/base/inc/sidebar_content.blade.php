@@ -21,6 +21,8 @@
             <li><a href="{{ backpack_url('user') }}"><i class="fa fa-user"></i> <span>Users</span></a></li>
             <li><a href="{{ backpack_url('role') }}"><i class="fa fa-group"></i> <span>Roles</span></a></li>
             <li><a href="{{ backpack_url('permission') }}"><i class="fa fa-key"></i> <span>Permissions</span></a></li>
+            <li><a href="{{ backpack_url('device') }}"><i class="fa fa-key"></i> <span>Devices</span></a></li>
+            <li><a href="{{ backpack_url('location') }}"><i class="fa fa-key"></i> <span>Locations</span></a></li>
         </ul>
     </li>
 @endcan
